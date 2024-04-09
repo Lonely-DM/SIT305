@@ -21,6 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Declaration of QuestionActivity -->
+        <activity android:name=".QuestionActivity" />
+
+        <!-- Declaration of FinalScoreActivity -->
+        <activity android:name=".FinalScoreActivity" />
     </application>
 
 </manifest>

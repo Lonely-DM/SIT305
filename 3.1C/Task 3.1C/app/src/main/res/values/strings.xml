@@ -1,3 +1,49 @@
 <resources>
     <string name="app_name">3.1C</string>
+    <string name="start_quiz">Start</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="submit">Submit</string>
+    <string name="next">Next</string>
+    <string name="finish_quiz">Finish</string>
+    <string name="take_new_quiz">Take New Quiz</string>
+
+    <string name="congratulations">Congratulations</string>
+    <string name="your_score">Your score:</string>
+
+    <string name="error_name_required">Name is required to start the quiz</string>
+    <string name="pref_key_user_name">userName</string>
+
+    <!-- Questions -->
+    <string name="question_1">What is the largest planet in our Solar System?</string>
+    <string name="question_2">Which element has the chemical symbol "O"?</string>
+    <string name="question_3">In computer science, what does "CPU" stand for?</string>
+    <string name="question_4">What is the capital city of Spain?</string>
+    <string name="question_5">Who wrote the play "Romeo and Juliet"?</string>
+
+    <!-- Options -->
+    <string name="option1_question1">Jupiter</string>
+    <string name="option2_question1">Mars</string>
+    <string name="option3_question1">Earth</string>
+    <string name="option4_question1">Saturn</string>
+
+    <string name="option1_question2">Hydrogen</string>
+    <string name="option2_question2">Oxygen</string>
+    <string name="option3_question2">Carbon</string>
+    <string name="option4_question2">Helium</string>
+
+    <string name="option1_question3">Central Processing Unit</string>
+    <string name="option2_question3">Computer Personal Unit</string>
+    <string name="option3_question3">Central Performance Unit</string>
+    <string name="option4_question3">Central Program Unit</string>
+
+    <string name="option1_question4">Madrid</string>
+    <string name="option2_question4">Barcelona</string>
+    <string name="option3_question4">Valencia</string>
+    <string name="option4_question4">Seville</string>
+
+    <string name="option1_question5">William Shakespeare</string>
+    <string name="option2_question5">Charles Dickens</string>
+    <string name="option3_question5">Jane Austen</string>
+    <string name="option4_question5">Mark Twain</string>
+
 </resources>
