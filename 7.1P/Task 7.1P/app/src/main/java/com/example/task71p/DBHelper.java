@@ -1,10 +1,13 @@
 package com.example.task71p;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.content.ContentValues;
+import android.database.Cursor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "LostFoundDB";
@@ -14,7 +17,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_TYPE = "type";
     private static final String COLUMN_ITEM = "item";
-    private static final String COLUMN_PHONE = "phone";
     private static final String COLUMN_DESCRIPTION = "description";
     private static final String COLUMN_DATE = "date";
     private static final String COLUMN_LOCATION = "location";
@@ -25,15 +27,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_ITEMS_TABLE = "CREATE TABLE " + TABLE_ITEMS + "("
+        String createTable = "CREATE TABLE " + TABLE_ITEMS + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_TYPE + " TEXT,"
                 + COLUMN_ITEM + " TEXT,"
-                + COLUMN_PHONE + " TEXT,"
                 + COLUMN_DESCRIPTION + " TEXT,"
                 + COLUMN_DATE + " TEXT,"
-                + COLUMN_LOCATION + " TEXT" + ")";
-        db.execSQL(CREATE_ITEMS_TABLE);
+                + COLUMN_LOCATION + " TEXT)";
+        db.execSQL(createTable);
     }
 
     @Override
@@ -42,23 +43,54 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addItem(String type, String item, String phone, String description, String date, String location) {
+    public void addItem(String type, String item, String description, String date, String location) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TYPE, type);
         values.put(COLUMN_ITEM, item);
-        values.put(COLUMN_PHONE, phone);
         values.put(COLUMN_DESCRIPTION, description);
         values.put(COLUMN_DATE, date);
         values.put(COLUMN_LOCATION, location);
-
         db.insert(TABLE_ITEMS, null, values);
         db.close();
     }
 
-    public Cursor getAllItems() {
+    public List<ItemDetail> getAllItemDetailsWithId() {
+        List<ItemDetail> items = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM " + TABLE_ITEMS, null);
+        Cursor cursor = db.query(TABLE_ITEMS, new String[]{COLUMN_ID, COLUMN_TYPE, COLUMN_ITEM, COLUMN_DESCRIPTION, COLUMN_DATE, COLUMN_LOCATION}, null, null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                String type = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
+                String item = cursor.getString(cursor.getColumnIndex(COLUMN_ITEM));
+                String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
+                String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
+                String location = cursor.getString(cursor.getColumnIndex(COLUMN_LOCATION));
+                items.add(new ItemDetail(id, type, item, description, date, location));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return items;
+    }
+
+    public ItemDetail getItemDetailsById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_ITEMS, new String[]{COLUMN_ID, COLUMN_TYPE, COLUMN_ITEM, COLUMN_DESCRIPTION, COLUMN_DATE, COLUMN_LOCATION}, COLUMN_ID + "=?", new String[]{String.valueOf(id)}, null, null, null, null);
+        ItemDetail itemDetail = null;
+        if (cursor.moveToFirst()) {
+            String type = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
+            String item = cursor.getString(cursor.getColumnIndex(COLUMN_ITEM));
+            String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
+            String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
+            String location = cursor.getString(cursor.getColumnIndex(COLUMN_LOCATION));
+            itemDetail = new ItemDetail(id, type, item, description, date, location);
+        }
+        cursor.close();
+        db.close();
+        return itemDetail;
     }
 
     public void deleteItem(int id) {
@@ -66,4 +98,5 @@ public class DBHelper extends SQLiteOpenHelper {
         db.delete(TABLE_ITEMS, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
+
 }

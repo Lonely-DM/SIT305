@@ -1,15 +1,15 @@
 package com.example.task71p;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ListItemsFragment extends Fragment {
 
@@ -20,23 +20,30 @@ public class ListItemsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_items, container, false);
-        dbHelper = new DBHelper(getContext());
         ListView lvItems = view.findViewById(R.id.lvItems);
+        dbHelper = new DBHelper(getContext());
 
-        ArrayList<String> itemDetails = new ArrayList<>();
-        Cursor cursor = dbHelper.getAllItems();
+        List<ItemDetail> items = dbHelper.getAllItemDetailsWithId();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,
+                items.stream().map(ItemDetail::toString).toArray(String[]::new));
+        lvItems.setAdapter(adapter);
 
-        while (cursor.moveToNext()) {
-            itemDetails.add(cursor.getString(cursor.getColumnIndexOrThrow("type")) + " - " +
-                    cursor.getString(cursor.getColumnIndexOrThrow("item")));
-        }
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, itemDetails);
-        lvItems.setAdapter(itemsAdapter);
+        lvItems.setOnItemClickListener((parent, view1, position, id) -> {
+            int itemId = items.get(position).getId();
+            navigateToDetailFragment(itemId);
+        });
 
         return view;
     }
+
+    private void navigateToDetailFragment(int itemId) {
+        if (getActivity() instanceof MainActivity) {
+            DetailFragment detailFragment = new DetailFragment(itemId);
+            ((MainActivity) getActivity()).showFragment(detailFragment, true);
+        }
+    }
+
+
 }

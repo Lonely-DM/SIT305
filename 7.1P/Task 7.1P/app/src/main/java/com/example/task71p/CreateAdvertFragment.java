@@ -16,7 +16,6 @@ public class CreateAdvertFragment extends Fragment {
     private DBHelper dbHelper;
 
     public CreateAdvertFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -25,33 +24,31 @@ public class CreateAdvertFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_create_advert, container, false);
         dbHelper = new DBHelper(getContext());
 
-        Spinner spinnerType = view.findViewById(R.id.spinnerLostFound);
+        Spinner spinnerType = view.findViewById(R.id.spinnerType);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.lost_found_options, android.R.layout.simple_spinner_item);
+                R.array.type_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerType.setAdapter(adapter);
 
-        EditText etItem = view.findViewById(R.id.etItem);
-        EditText etPhone = view.findViewById(R.id.etPhone);
+        EditText etItemName = view.findViewById(R.id.etItemName);
         EditText etDescription = view.findViewById(R.id.etDescription);
         EditText etDate = view.findViewById(R.id.etDate);
         EditText etLocation = view.findViewById(R.id.etLocation);
-        Button btnPost = view.findViewById(R.id.btnPost);
+        Button btnPostAdvert = view.findViewById(R.id.btnPostAdvert);
 
-        btnPost.setOnClickListener(v -> {
+        btnPostAdvert.setOnClickListener(v -> {
             String type = spinnerType.getSelectedItem().toString();
-            String item = etItem.getText().toString();
-            String phone = etPhone.getText().toString();
+            String itemName = etItemName.getText().toString();
             String description = etDescription.getText().toString();
             String date = etDate.getText().toString();
             String location = etLocation.getText().toString();
 
-            // Add item to the database
-            dbHelper.addItem(type, item, phone, description, date, location);
-            Toast.makeText(getContext(), "Item posted successfully!", Toast.LENGTH_SHORT).show();
+            dbHelper.addItem(type, itemName, description, date, location);
+            Toast.makeText(getContext(), "Advert Posted Successfully!", Toast.LENGTH_LONG).show();
 
-            // Transition back to the HomeFragment
-            ((MainActivity)getActivity()).showFragment(new HomeFragment());
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).showFragment(new HomeFragment(), false);
+            }
         });
 
         return view;
