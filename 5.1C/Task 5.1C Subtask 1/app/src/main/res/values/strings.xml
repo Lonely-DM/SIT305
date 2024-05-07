@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Task 5.1C Subtask 1</string>
+    <string name="top_stories">Top Stories</string>
+    <string name="news">News</string>
+    <string name="news_title_1">Test Title 1</string>
+    <string name="news_description_1">Test Description 1</string>
+    <string name="news_title_2">Test Title 2</string>
+    <string name="news_description_2">Test Description 2</string>
+    <string name="news_title_3">Test Title 3</string>
+    <string name="news_description_3">Test Description 3</string>
+    <string name="news_title_4">Test Title 4</string>
+    <string name="news_description_4">Test Description 4</string>
+    <string name="news_title_5">Test Title 5</string>
+    <string name="news_description_5">Test Description 5</string>
+    <string name="news_title_6">Test Title 6</string>
+    <string name="news_description_6">Test Description 6</string>
 </resources>

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.task51csubtask1"
+    namespace = "com.example.task71p"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.task51csubtask1"
+        applicationId = "com.example.task71p"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -37,8 +37,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("androidx.cardview:cardview:1.0.0")
-
 }

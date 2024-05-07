@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Task 7.1P</string>
+    <string-array name="lost_found_options">
+        <item>Lost</item>
+        <item>Found</item>
+    </string-array>
+</resources>
