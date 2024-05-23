@@ -8,19 +8,21 @@
         android:id="@+id/createAdvertButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="550px"
-        android:text="Create a New Advert" />
+        android:layout_marginTop="200dp"
+        android:text="CREATE A NEW ADVERT" />
 
     <Button
         android:id="@+id/showAllItemsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show All Lost &amp; Found Items" />
+        android:layout_marginTop="16dp"
+        android:text="SHOW ALL LOST &amp; FOUND ITEMS" />
 
     <Button
         android:id="@+id/showOnMapButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show on Map" />
+        android:layout_marginTop="16dp"
+        android:text="SHOW ON MAP" />
 
 </LinearLayout>

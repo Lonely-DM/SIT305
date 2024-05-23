@@ -6,13 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class DetailFragment extends Fragment {
 
+    private TextView typeTextView, itemTextView, descriptionTextView, dateTextView, locationTextView;
+    private Button deleteButton;
     private DBHelper dbHelper;
     private int itemId;
 
@@ -21,33 +22,40 @@ public class DetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        TextView typeTextView = view.findViewById(R.id.typeTextView);
-        TextView itemTextView = view.findViewById(R.id.itemTextView);
-        TextView descriptionTextView = view.findViewById(R.id.descriptionTextView);
-        TextView dateTextView = view.findViewById(R.id.dateTextView);
-        TextView locationTextView = view.findViewById(R.id.locationTextView);
-        Button deleteButton = view.findViewById(R.id.deleteButton);
+        typeTextView = view.findViewById(R.id.typeTextView);
+        itemTextView = view.findViewById(R.id.itemTextView);
+        descriptionTextView = view.findViewById(R.id.descriptionTextView);
+        dateTextView = view.findViewById(R.id.dateTextView);
+        locationTextView = view.findViewById(R.id.locationTextView);
+        deleteButton = view.findViewById(R.id.deleteButton);
 
         dbHelper = new DBHelper(getActivity());
-        if (getArguments() != null) {
-            itemId = getArguments().getInt("itemId");
-            ItemDetail itemDetail = dbHelper.getItemDetailById(itemId);
 
-            if (itemDetail != null) {
-                typeTextView.setText(itemDetail.getType());
-                itemTextView.setText(itemDetail.getItem());
-                descriptionTextView.setText(itemDetail.getDescription());
-                dateTextView.setText(itemDetail.getDate());
-                locationTextView.setText(itemDetail.getLocation());
-            }
+        if (getArguments() != null) {
+            itemId = getArguments().getInt("item_id");
+            loadItemDetails(itemId);
         }
 
-        deleteButton.setOnClickListener(v -> {
-            dbHelper.deleteItem(itemId);
-            Toast.makeText(getActivity(), "Item deleted", Toast.LENGTH_SHORT).show();
-            getParentFragmentManager().popBackStack();
-        });
+        deleteButton.setOnClickListener(v -> deleteItem(itemId));
 
         return view;
+    }
+
+    private void loadItemDetails(int id) {
+        ItemDetail itemDetail = dbHelper.getItemDetailById(id);
+        if (itemDetail != null) {
+            typeTextView.setText(itemDetail.getPostType());
+            itemTextView.setText(itemDetail.getName());
+            descriptionTextView.setText(itemDetail.getDescription());
+            dateTextView.setText(itemDetail.getDate());
+            locationTextView.setText(itemDetail.getLocation());
+        }
+    }
+
+    private void deleteItem(int id) {
+        boolean deleted = dbHelper.deleteItem(id);
+        if (deleted) {
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
     }
 }

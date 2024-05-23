@@ -10,13 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "LostFoundDB";
+
+    private static final String DATABASE_NAME = "task91p.db";
     private static final int DATABASE_VERSION = 1;
 
-    private static final String TABLE_ITEMS = "items";
+    private static final String TABLE_ADVERTS = "adverts";
     private static final String COLUMN_ID = "id";
-    private static final String COLUMN_TYPE = "type";
-    private static final String COLUMN_ITEM = "item";
+    private static final String COLUMN_POST_TYPE = "post_type";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_PHONE = "phone";
     private static final String COLUMN_DESCRIPTION = "description";
     private static final String COLUMN_DATE = "date";
     private static final String COLUMN_LOCATION = "location";
@@ -27,75 +29,88 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE " + TABLE_ITEMS + "("
-                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + COLUMN_TYPE + " TEXT,"
-                + COLUMN_ITEM + " TEXT,"
-                + COLUMN_DESCRIPTION + " TEXT,"
-                + COLUMN_DATE + " TEXT,"
-                + COLUMN_LOCATION + " TEXT)";
-        db.execSQL(createTable);
+        String CREATE_ADVERTS_TABLE = "CREATE TABLE " + TABLE_ADVERTS + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_POST_TYPE + " TEXT, " +
+                COLUMN_NAME + " TEXT, " +
+                COLUMN_PHONE + " TEXT, " +
+                COLUMN_DESCRIPTION + " TEXT, " +
+                COLUMN_DATE + " TEXT, " +
+                COLUMN_LOCATION + " TEXT)";
+        db.execSQL(CREATE_ADVERTS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ITEMS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADVERTS);
         onCreate(db);
     }
 
-    public void addItem(String type, String item, String description, String date, String location) {
+    public boolean insertAdvert(String postType, String name, String phone, String description, String date, String location) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_TYPE, type);
-        values.put(COLUMN_ITEM, item);
+        values.put(COLUMN_POST_TYPE, postType);
+        values.put(COLUMN_NAME, name);
+        values.put(COLUMN_PHONE, phone);
         values.put(COLUMN_DESCRIPTION, description);
         values.put(COLUMN_DATE, date);
         values.put(COLUMN_LOCATION, location);
-        db.insert(TABLE_ITEMS, null, values);
-        db.close();
+
+        long result = db.insert(TABLE_ADVERTS, null, values);
+        return result != -1;
     }
 
-    public List<ItemDetail> getAllItemDetails() {
-        List<ItemDetail> items = new ArrayList<>();
+    public Cursor getAllAdverts() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_ITEMS, null, null, null, null, null, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
-                String type = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
-                String item = cursor.getString(cursor.getColumnIndex(COLUMN_ITEM));
-                String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
-                String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
-                String location = cursor.getString(cursor.getColumnIndex(COLUMN_LOCATION));
-                items.add(new ItemDetail(id, type, item, description, date, location));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-        return items;
+        return db.rawQuery("SELECT * FROM " + TABLE_ADVERTS, null);
     }
 
     public ItemDetail getItemDetailById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_ITEMS, null, COLUMN_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
-        ItemDetail itemDetail = null;
-        if (cursor.moveToFirst()) {
-            String type = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
-            String item = cursor.getString(cursor.getColumnIndex(COLUMN_ITEM));
-            String description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION));
-            String date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE));
-            String location = cursor.getString(cursor.getColumnIndex(COLUMN_LOCATION));
-            itemDetail = new ItemDetail(id, type, item, description, date, location);
+        Cursor cursor = db.query(TABLE_ADVERTS, new String[]{COLUMN_ID, COLUMN_POST_TYPE, COLUMN_NAME, COLUMN_PHONE, COLUMN_DESCRIPTION, COLUMN_DATE, COLUMN_LOCATION},
+                COLUMN_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
         }
+
+        ItemDetail itemDetail = new ItemDetail(
+                cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_POST_TYPE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION))
+        );
         cursor.close();
-        db.close();
         return itemDetail;
     }
 
-    public void deleteItem(int id) {
+    public boolean deleteItem(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_ITEMS, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
-        db.close();
+        return db.delete(TABLE_ADVERTS, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) > 0;
+    }
+
+    public List<ItemDetail> getAllItemDetails() {
+        List<ItemDetail> itemList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_ADVERTS, null, null, null, null, null, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                ItemDetail itemDetail = new ItemDetail(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_POST_TYPE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION))
+                );
+                itemList.add(itemDetail);
+            }
+            cursor.close();
+        }
+        return itemList;
     }
 }

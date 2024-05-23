@@ -4,5 +4,4 @@
         <item>Lost</item>
         <item>Found</item>
     </string-array>
-    <string name="google_maps_key">${googleMapsApiKey}</string>
 </resources>

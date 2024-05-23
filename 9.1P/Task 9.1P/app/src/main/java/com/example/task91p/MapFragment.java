@@ -1,47 +1,59 @@
 package com.example.task91p;
 
+import android.location.Geocoder;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private MapsHelper mapsHelper;
+    private GoogleMap mMap;
     private DBHelper dbHelper;
+    private Geocoder geocoder;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-        mapsHelper = new MapsHelper(getActivity());
-        dbHelper = new DBHelper(getActivity());
-
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment == null) {
-            mapFragment = SupportMapFragment.newInstance();
-            getChildFragmentManager().beginTransaction().replace(R.id.map, mapFragment).commit();
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
         }
-        mapFragment.getMapAsync(this);
+        dbHelper = new DBHelper(getActivity());
+        geocoder = new Geocoder(getActivity());
         return view;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        List<ItemDetail> items = dbHelper.getAllItemDetails();
-        for (ItemDetail item : items) {
-            LatLng latLng = new LatLng(Double.parseDouble(item.getLocation().split(",")[0]), Double.parseDouble(item.getLocation().split(",")[1]));
-            mapsHelper.addMarker(googleMap, latLng, item.getItem());
+        mMap = googleMap;
+
+        List<ItemDetail> itemDetails = dbHelper.getAllItemDetails();
+        for (ItemDetail item : itemDetails) {
+            double latitude = item.getLatitude(geocoder);
+            double longitude = item.getLongitude(geocoder);
+            if (latitude != 0.0 && longitude != 0.0) {
+                LatLng location = new LatLng(latitude, longitude);
+                mMap.addMarker(new MarkerOptions().position(location).title(item.getName()));
+            }
         }
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-33.8688, 151.2093), 10));
+
+        // Move the camera to the first item
+        if (!itemDetails.isEmpty()) {
+            ItemDetail firstItem = itemDetails.get(0);
+            LatLng firstLocation = new LatLng(firstItem.getLatitude(geocoder), firstItem.getLongitude(geocoder));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLocation, 10));
+        }
     }
 }

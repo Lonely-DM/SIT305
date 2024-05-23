@@ -8,7 +8,6 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 public class HomeFragment extends Fragment {
 
@@ -22,24 +21,15 @@ public class HomeFragment extends Fragment {
         Button showOnMapButton = view.findViewById(R.id.showOnMapButton);
 
         createAdvertButton.setOnClickListener(v -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, new CreateAdvertFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+            ((MainActivity) getActivity()).navigateToFragment(new CreateAdvertFragment());
         });
 
         showAllItemsButton.setOnClickListener(v -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, new ListItemsFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+            ((MainActivity) getActivity()).navigateToFragment(new ListItemsFragment());
         });
 
         showOnMapButton.setOnClickListener(v -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, new MapFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+            ((MainActivity) getActivity()).navigateToFragment(new MapFragment());
         });
 
         return view;
